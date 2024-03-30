@@ -54,6 +54,16 @@ jobs:
         color: '#0d87e9'
     defaultValueProvider: !SpecifiedDefaultValue
       value: 'true'
+  - !ChoiceParam
+    name: ACTION
+    allowMultiple: false
+    allowEmpty: false
+    choiceProvider: !SpecifiedChoices
+      choices:
+      - value: create
+        color: '#0d87e9'
+      - value: destroy
+        color: '#0d87e9'
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
