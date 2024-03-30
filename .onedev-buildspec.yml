@@ -17,9 +17,10 @@ jobs:
         cd /opt/freeipa-workshop-deployer
         cp example.vars.sh vars.sh
         sed -i 's/INFRA_PROVIDER=.*/INFRA_PROVIDER="kcli"/' vars.sh
-        sed -i 's/INVENTORY=.*/INVENTORY='${INVENTORY}'/' vars.sh
-        sed -i 's/KCLI_NETWORK=.*/KCLI_NETWORK="'${NET_NAME}'"/' vars.sh
-        sed -i 's/COMMUNITY_VERSION=.*/COMMUNITY_VERSION="'${NET_NAME}'"/' vars.sh
+        sed -i 's/INVENTORY=.*/INVENTORY='@param:INVENTORY@'/' vars.sh
+        sed -i 's/KCLI_NETWORK=.*/KCLI_NETWORK="'@param:KCLI_NETWORK@}'"/' vars.sh
+        sed -i 's/COMMUNITY_VERSION=.*/COMMUNITY_VERSION="'@param:COMMUNITY_VERSION@'"/' vars.sh
+        cat vars.sh
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
