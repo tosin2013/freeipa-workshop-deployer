@@ -31,11 +31,19 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
-if [[ ! -f /var/lib/libvirt/images/rhel8 ]];
+if [ $COMMUNITY_VERSION == "true" ]; then
+  echo "Community version"
+  export IMAGE_NAME=centos9stream
+else
+  echo "Enterprise version"
+  export IMAGE_NAME=rhel8
+fi
+
+if [[ ! -f /var/lib/libvirt/images/${IMAGE_NAME} ]];
 then
-  echo "RHEL8 image not found"
+  echo "${IMAGE_NAME} image not found"
   echo "Please Run  the following command to download the image"
-  echo "sudo kcli download image rhel8"
+  echo "sudo kcli download image ${IMAGE_NAME}"
   exit 1
 fi
 
@@ -82,7 +90,7 @@ RHSM_ORG=$(${USE_SUDO} yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(${USE_SUDO} yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=freeipa-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=rhel8
+IMAGE_NAME=${IMAGE_NAME}
 DNS_FORWARDER=$(${USE_SUDO} yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(${USE_SUDO} yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50

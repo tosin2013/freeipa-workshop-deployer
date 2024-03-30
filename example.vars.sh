@@ -30,7 +30,7 @@ KCLI_CONFIG_FILE="${KCLI_CONFIG_DIR}/profiles.yml"
 PROFILES_FILE="kcli-profiles.yml"
 KCLI_PLANS_PATH=/opt/kcli-pipelines
 FREEIPA_REPO_LOC=/opt/freeipa-workshop-deployer
-KCLI_NETWORK="qubinet"
+COMMUNITY_VERSION="false"
 
 
 ### DO NOT EDIT PAST THIS LINE
