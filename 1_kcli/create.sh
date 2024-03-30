@@ -38,7 +38,6 @@ else
   echo "Enterprise version"
   export IMAGE_NAME=rhel8
 fi
-exit 1
 
 if [[ ! -f /var/lib/libvirt/images/${IMAGE_NAME} ]];
 then
