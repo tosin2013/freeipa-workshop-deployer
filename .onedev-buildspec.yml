@@ -27,19 +27,7 @@ jobs:
     name: Create/Destroy FreeIPA
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: |
-        # Check if the argument is "create" or "destroy"
-        if [ "@param:ACTION@" == "create" ]; then
-            echo "Creating..."
-            /opt/freeipa-workshop-deployer/1_kcli/create.sh
-            /opt/freeipa-workshop-deployer/2_ansible_config/configure.sh
-        elif [ "@param:ACTION@" == "destroy" ]; then
-            echo "Destroying..."
-           /opt/freeipa-workshop-deployer/1_kcli/destroy.sh
-        else
-            echo "Invalid argument. Usage: $0 [create|destroy]"
-            exit 1
-        fi
+      commands: "# Check if the argument is \"create\" or \"destroy\"\nif [ \"@param:ACTION@\" == \"create\" ]; then\n    echo \"Creating...\"\n\texport COMMUNITY_VERSION=@param:COMMUNITY_VERSION@\n    /opt/freeipa-workshop-deployer/1_kcli/create.sh\n    /opt/freeipa-workshop-deployer/2_ansible_config/configure.sh\nelif [ \"@param:ACTION@\" == \"destroy\" ]; then\n    echo \"Destroying...\"\n   /opt/freeipa-workshop-deployer/1_kcli/destroy.sh\nelse\n    echo \"Invalid argument. Usage: $0 [create|destroy]\"\n    exit 1\nfi\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
