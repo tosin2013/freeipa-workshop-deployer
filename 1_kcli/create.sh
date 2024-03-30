@@ -1,6 +1,6 @@
 #!/bin/bash
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -xe	## Uncomment for debugging
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -xe	## Uncomment for debugging
 
 
 ## Functions
@@ -38,6 +38,7 @@ else
   echo "Enterprise version"
   export IMAGE_NAME=rhel8
 fi
+exit 1
 
 if [[ ! -f /var/lib/libvirt/images/${IMAGE_NAME} ]];
 then
