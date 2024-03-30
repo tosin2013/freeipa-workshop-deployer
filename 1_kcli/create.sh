@@ -34,9 +34,11 @@ fi
 if [ $COMMUNITY_VERSION == "true" ]; then
   echo "Community version"
   export IMAGE_NAME=centos9stream
+  export TEMPLATE_NAME=template-centos.yaml
 else
   echo "Enterprise version"
   export IMAGE_NAME=rhel8
+  export TEMPLATE_NAME=template.yaml
 fi
 
 if [[ ! -f /var/lib/libvirt/images/${IMAGE_NAME} ]];
@@ -96,6 +98,21 @@ DOMAIN=$(${USE_SUDO} yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
+if [ $COMMUNITY_VERSION == "true" ]; then
+  echo "Community version"
+${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
+image: ${IMAGE_NAME}
+user: cloud-user
+user_password: ${PASSWORD}
+disk_size: ${DISK_SIZE} 
+numcpus: 4
+memory: 8184
+net_name: ${KCLI_NETWORK} 
+reservedns: ${DNS_FORWARDER}
+domainname: ${DOMAIN}
+EOF
+else
+  echo "Enterprise version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
 user: cloud-user
@@ -109,17 +126,19 @@ domainname: ${DOMAIN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
+fi
+
 
 # if target server is null run target server is empty if target server is hetzner run hetzner else run default
 if [ -z "$TARGET_SERVER" ]; then
   echo "TARGET_SERVER is empty"
-  ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/template.yaml --vars-file /tmp/vm_vars.yaml
+  ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/${TEMPLATE_NAME} --vars-file /tmp/vm_vars.yaml
 elif [ "$TARGET_SERVER" == "hetzner" ]; then
   echo "TARGET_SERVER is hetzner"
-  ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml freeipa freeipa/template.yaml --vars-file /tmp/vm_vars.yaml
+  ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml freeipa freeipa/${TEMPLATE_NAME}  --vars-file /tmp/vm_vars.yaml
 else
   echo "TARGET_SERVER is ${TARGET_SERVER}"
- ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/template.yaml --vars-file /tmp/vm_vars.yaml
+ ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/${TEMPLATE_NAME} --vars-file /tmp/vm_vars.yaml
 fi
 
 
