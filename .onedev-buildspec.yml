@@ -1,0 +1,22 @@
+version: 30
+jobs:
+- name: Deploy FreeIPA on KVM
+  steps:
+  - !CommandStep
+    name: Testing HOSTNAME
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands: "IP_ADDRESS=$(sudo kcli info vm  @param:VM_HOSTNAME@ | grep ip | awk '{print $2}')\nif [ -z \"${IP_ADDRESS}\" ]; then\n\techo \"Failed to get IP address of the VM\"\n\texit 1\nfi\n\necho ${IP_ADDRESS}\n"
+    useTTY: true
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  paramSpecs:
+  - !TextParam
+    name: VM_HOSTNAME
+    allowEmpty: false
+    multiline: false
+    defaultValueProvider: !SpecifiedDefaultValue
+      value: vm_name
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
