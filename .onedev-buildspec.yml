@@ -6,16 +6,16 @@ jobs:
     name: Clone freeipa-workshop-deployer
     runInContainer: false
     interpreter: !DefaultInterpreter
-      commands: "if [ ! -d /opt/freeipa-workshop-deployer ];\nthen \n  cd /opt/\n  git clone https://github.com/tosin2013/freeipa-workshop-deployer.git\n  cd freeipa-workshop-deployer\nelse\n  cd /opt/freeipa-workshop-deployer\n  git config pull.rebase false\n  git pull\nfi\n"
+      commands: "if [ ! -d /opt/freeipa-workshop-deployer ];\nthen \n  cd /opt/\n  git clone @param:GIT_REPO@\n  cd freeipa-workshop-deployer\nelse\n  cd /opt/freeipa-workshop-deployer\n  git config pull.rebase false\n  git pull\nfi\n"
     useTTY: true
     condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
   paramSpecs:
   - !TextParam
-    name: VM_HOSTNAME
+    name: GIT_REPO
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: vm_name
+      value: http://admin:oeuHd427IFFnXH6FUYCA40ZIkNQ@157.90.32.176:6610/tosin2013/freeipa-workshop-deployer.git
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
