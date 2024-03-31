@@ -115,7 +115,7 @@ if [ "$IMAGE_NAME" == "centos8stream" ]; then
   echo "Community version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
-user: cloud-user
+user: centos
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
