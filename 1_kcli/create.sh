@@ -159,7 +159,8 @@ fi
 
 
 
-#cat  kcli-profiles.yml
+cat  kcli-profiles.yml
+exit 0
 sleep 10s
 ${USE_SUDO} cp kcli-profiles.yml ${KCLI_CONFIG_DIR}/profiles.yml
 ${USE_SUDO} cp kcli-profiles.yml /root/.kcli/profiles.yml
