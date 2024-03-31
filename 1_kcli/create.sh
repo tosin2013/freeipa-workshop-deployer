@@ -111,7 +111,7 @@ DISK_SIZE=50
 KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
 
-if [ "$COMMUNITY_VERSION" == "true" ]; then
+if [ "$IMAGE_NAME" == "centos9stream" ]; then
   echo "Community version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
@@ -124,7 +124,7 @@ net_name: ${KCLI_NETWORK}
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 EOF
-elif [ "$COMMUNITY_VERSION" == "false" ]; then
+elif [ "$IMAGE_NAME" == "rhel8" ]; then
   echo "Enterprise version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
@@ -140,7 +140,7 @@ rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
 else
-  echo "Correct $COMMUNITY_VERSION not set"
+  echo "Correct IMAGE_NAME: $IMAGE_NAME not set"
   exit 1
 fi
 
