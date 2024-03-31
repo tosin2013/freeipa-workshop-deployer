@@ -38,7 +38,7 @@ echo "COMMUNITY_VERSION is set to: $COMMUNITY_VERSION"
 
 if [ "$COMMUNITY_VERSION" == "true" ]; then
   echo "Community version"
-  export IMAGE_NAME=centos9stream
+  export IMAGE_NAME=centos8stream
   export TEMPLATE_NAME=template-centos.yaml
   echo "IMAGE_NAME: $IMAGE_NAME"
   echo "TEMPLATE_NAME: $TEMPLATE_NAME"
@@ -111,7 +111,7 @@ DISK_SIZE=50
 KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
 
-if [ "$IMAGE_NAME" == "centos9stream" ]; then
+if [ "$IMAGE_NAME" == "centos8stream" ]; then
   echo "Community version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
