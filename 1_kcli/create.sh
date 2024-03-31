@@ -31,6 +31,7 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
+echo "COMMUNITY_VERSION: $COMMUNITY_VERSION"
 if [ $COMMUNITY_VERSION == "true" ]; then
   echo "Community version"
   export IMAGE_NAME=centos9stream
