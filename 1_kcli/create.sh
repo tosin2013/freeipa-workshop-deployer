@@ -31,14 +31,18 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
-echo "COMMUNITY_VERSION: $COMMUNITY_VERSION"
-if [ $COMMUNITY_VERSION == true ]; then
+
+COMMUNITY_VERSION="$(echo -e "${COMMUNITY_VERSION}" | tr -d '[:space:]')"
+
+echo "COMMUNITY_VERSION is set to: $COMMUNITY_VERSION"
+
+if [ "$COMMUNITY_VERSION" == "true" ]; then
   echo "Community version"
   export IMAGE_NAME=centos9stream
   export TEMPLATE_NAME=template-centos.yaml
   echo "IMAGE_NAME: $IMAGE_NAME"
   echo "TEMPLATE_NAME: $TEMPLATE_NAME"
-elif [ $COMMUNITY_VERSION == false ]; then
+elif [ "$COMMUNITY_VERSION" == "false" ]; then
   echo "Enterprise version"
   export IMAGE_NAME=rhel8
   export TEMPLATE_NAME=template.yaml
@@ -106,7 +110,8 @@ DOMAIN=$(${USE_SUDO} yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
-if [ $COMMUNITY_VERSION == true  ]; then
+
+if [ "$COMMUNITY_VERSION" == "true" ]; then
   echo "Community version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
@@ -119,7 +124,7 @@ net_name: ${KCLI_NETWORK}
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 EOF
-elif [ $COMMUNITY_VERSION == false ]; then
+elif [ "$COMMUNITY_VERSION" == "false" ]; then
   echo "Enterprise version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
