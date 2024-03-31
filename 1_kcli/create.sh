@@ -111,7 +111,7 @@ net_name: ${KCLI_NETWORK}
 reservedns: ${DNS_FORWARDER}
 domainname: ${DOMAIN}
 EOF
-else
+elif [ $COMMUNITY_VERSION == "false" ]; then
   echo "Enterprise version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
@@ -126,6 +126,9 @@ domainname: ${DOMAIN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
+else
+  echo "Correct $COMMUNITY_VERSION not set"
+  exit 1
 fi
 
 
