@@ -40,12 +40,14 @@ if [ "$COMMUNITY_VERSION" == "true" ]; then
   echo "Community version"
   export IMAGE_NAME=centos8stream
   export TEMPLATE_NAME=template-centos.yaml
+  export LOGIN_USER=centos
   echo "IMAGE_NAME: $IMAGE_NAME"
   echo "TEMPLATE_NAME: $TEMPLATE_NAME"
 elif [ "$COMMUNITY_VERSION" == "false" ]; then
   echo "Enterprise version"
   export IMAGE_NAME=rhel8
   export TEMPLATE_NAME=template.yaml
+  export LOGIN_USER=cloud-user
   echo "IMAGE_NAME: $IMAGE_NAME"
   echo "TEMPLATE_NAME: $TEMPLATE_NAME"
 else
@@ -115,7 +117,7 @@ if [ "$IMAGE_NAME" == "centos8stream" ]; then
   echo "Community version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
-user: centos
+user: ${LOGIN_USER}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
@@ -128,7 +130,7 @@ elif [ "$IMAGE_NAME" == "rhel8" ]; then
   echo "Enterprise version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
-user: cloud-user
+user: ${LOGIN_USER}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
@@ -193,7 +195,7 @@ ${IDM_HOSTNAME}
 
 [all:vars]
 ansible_ssh_private_key_file=/root/.ssh/id_rsa
-ansible_ssh_user=cloud-user
+ansible_ssh_user=${LOGIN_USER}
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_internal_private_ip=${IP_ADDRESS}
 EOF
