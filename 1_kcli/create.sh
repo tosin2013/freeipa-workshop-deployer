@@ -36,10 +36,14 @@ if [ $COMMUNITY_VERSION == "true" ]; then
   echo "Community version"
   export IMAGE_NAME=centos9stream
   export TEMPLATE_NAME=template-centos.yaml
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
 elif [ $COMMUNITY_VERSION == "false" ]; then
   echo "Enterprise version"
   export IMAGE_NAME=rhel8
   export TEMPLATE_NAME=template.yaml
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
 else
   echo "Correct $COMMUNITY_VERSION not set"
   exit 1
