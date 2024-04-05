@@ -36,7 +36,7 @@ jobs:
     allowEmpty: false
     multiline: false
     defaultValueProvider: !SpecifiedDefaultValue
-      value: http://admin:oeuHd427IFFnXH6FUYCA40ZIkNQ@157.90.32.176:6610/tosin2013/freeipa-workshop-deployer.git
+      value: https://github.com/tosin2013/freeipa-workshop-deployer.git
   - !TextParam
     name: INVENTORY
     allowEmpty: false
