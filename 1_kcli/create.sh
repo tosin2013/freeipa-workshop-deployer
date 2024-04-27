@@ -1,6 +1,6 @@
 #!/bin/bash
-#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-#set -xe	## Uncomment for debugging
+export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+set -x	## Uncomment for debugging
 
 
 ## Functions
@@ -31,11 +31,35 @@ if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
 
-if [[ ! -f /var/lib/libvirt/images/rhel8 ]];
+
+COMMUNITY_VERSION="$(echo -e "${COMMUNITY_VERSION}" | tr -d '[:space:]')"
+
+echo "COMMUNITY_VERSION is set to: $COMMUNITY_VERSION"
+
+if [ "$COMMUNITY_VERSION" == "true" ]; then
+  echo "Community version"
+  export IMAGE_NAME=centos8stream
+  export TEMPLATE_NAME=template-centos.yaml
+  export LOGIN_USER=centos
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
+elif [ "$COMMUNITY_VERSION" == "false" ]; then
+  echo "Enterprise version"
+  export IMAGE_NAME=rhel8
+  export TEMPLATE_NAME=template.yaml
+  export LOGIN_USER=cloud-user
+  echo "IMAGE_NAME: $IMAGE_NAME"
+  echo "TEMPLATE_NAME: $TEMPLATE_NAME"
+else
+  echo "Correct $COMMUNITY_VERSION not set"
+  exit 1
+fi
+
+if [[ ! -f /var/lib/libvirt/images/${IMAGE_NAME} ]];
 then
-  echo "RHEL8 image not found"
+  echo "${IMAGE_NAME} image not found"
   echo "Please Run  the following command to download the image"
-  echo "sudo kcli download image rhel8"
+  echo "sudo kcli download image ${IMAGE_NAME}"
   exit 1
 fi
 
@@ -82,15 +106,31 @@ RHSM_ORG=$(${USE_SUDO} yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
 RHSM_ACTIVATION_KEY=$(${USE_SUDO} yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
 PULL_SECRET=$(${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=freeipa-$(echo $RANDOM | md5sum | head -c 5; echo;)
-IMAGE_NAME=rhel8
+IMAGE_NAME=${IMAGE_NAME}
 DNS_FORWARDER=$(${USE_SUDO} yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
 DOMAIN=$(${USE_SUDO} yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
 DISK_SIZE=50
 KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
+
+if [ "$IMAGE_NAME" == "centos8stream" ]; then
+  echo "Community version"
 ${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
 image: ${IMAGE_NAME}
-user: cloud-user
+user: ${LOGIN_USER}
+user_password: ${PASSWORD}
+disk_size: ${DISK_SIZE} 
+numcpus: 4
+memory: 8184
+net_name: ${KCLI_NETWORK} 
+reservedns: ${DNS_FORWARDER}
+domainname: ${DOMAIN}
+EOF
+elif [ "$IMAGE_NAME" == "rhel8" ]; then
+  echo "Enterprise version"
+${USE_SUDO} tee /tmp/vm_vars.yaml <<EOF
+image: ${IMAGE_NAME}
+user: ${LOGIN_USER}
 user_password: ${PASSWORD}
 disk_size: ${DISK_SIZE} 
 numcpus: 4
@@ -101,17 +141,22 @@ domainname: ${DOMAIN}
 rhnorg: ${RHSM_ORG}
 rhnactivationkey: ${RHSM_ACTIVATION_KEY} 
 EOF
+else
+  echo "Correct IMAGE_NAME: $IMAGE_NAME not set"
+  exit 1
+fi
+
 
 # if target server is null run target server is empty if target server is hetzner run hetzner else run default
 if [ -z "$TARGET_SERVER" ]; then
   echo "TARGET_SERVER is empty"
-  ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/template.yaml --vars-file /tmp/vm_vars.yaml
+  ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/${TEMPLATE_NAME} --vars-file /tmp/vm_vars.yaml
 elif [ "$TARGET_SERVER" == "hetzner" ]; then
   echo "TARGET_SERVER is hetzner"
-  ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml freeipa freeipa/template.yaml --vars-file /tmp/vm_vars.yaml
+  ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml freeipa freeipa/${TEMPLATE_NAME}  --vars-file /tmp/vm_vars.yaml
 else
   echo "TARGET_SERVER is ${TARGET_SERVER}"
- ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/template.yaml --vars-file /tmp/vm_vars.yaml
+ ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/${TEMPLATE_NAME} --vars-file /tmp/vm_vars.yaml
 fi
 
 
@@ -153,7 +198,7 @@ ${IDM_HOSTNAME}
 
 [all:vars]
 ansible_ssh_private_key_file=/root/.ssh/id_rsa
-ansible_ssh_user=cloud-user
+ansible_ssh_user=${LOGIN_USER}
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_internal_private_ip=${IP_ADDRESS}
 EOF

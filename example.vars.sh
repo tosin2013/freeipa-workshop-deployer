@@ -31,6 +31,9 @@ PROFILES_FILE="kcli-profiles.yml"
 KCLI_PLANS_PATH=/opt/kcli-pipelines
 FREEIPA_REPO_LOC=/opt/freeipa-workshop-deployer
 KCLI_NETWORK="qubinet"
+# Use COMMUNI=TY_VERSION="true" for centos9stream
+# Use COMMUNITY_VERSION="false" for rhel8
+COMMUNITY_VERSION="false"
 
 
 ### DO NOT EDIT PAST THIS LINE
