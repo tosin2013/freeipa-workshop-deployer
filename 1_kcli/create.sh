@@ -170,7 +170,7 @@ IN_INSTALLED=$(sudo kcli list vm | grep freeipa | awk '{print $2}')
 
 if [ -n "$IN_INSTALLED" ]; then
     echo "FreeIPA is installed on VM $IN_INSTALLED"
-elif [ -z $STATIC_IP ]; then
+elif  [ -n "$IN_INSTALLED" ] && [ ! -z $STATIC_IP ]; then
     echo "FreeIPA is not installed"
     ${USE_SUDO} /usr/bin/kcli create vm -p freeipa freeipa -P nets=['{"name":"default","ip":"192.168.122.250","netmask":"24","gateway":"192.168.122.1"}'] -w || exit $?
 else
