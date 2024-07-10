@@ -49,8 +49,21 @@
 
 
   #checkForProgramAndExit ansible-playbook
+  # if target server is null run target server is empty if target server is hetzner run hetzner else run default
+if [ -z "$TARGET_SERVER" ]; then
+  echo "TARGET_SERVER is empty"
   ANSIBLE_COMMAND="/usr/local/bin/ansible-playbook"
   ANSIBLE_GALAXY="/usr/local/bin/ansible-galaxy"
+elif [ "$TARGET_SERVER" == "rhel9-equinix" ]; then
+  echo "TARGET_SERVER is $TARGET_SERVER"
+  ANSIBLE_COMMAND="/usr/bin/ansible-playbook"
+  ANSIBLE_GALAXY="/usr/bin/ansible-galaxy"
+else
+  echo "TARGET_SERVER is ${TARGET_SERVER}"
+  ANSIBLE_COMMAND="/usr/local/bin/ansible-playbook"
+  ANSIBLE_GALAXY="/usr/local/bin/ansible-galaxy"
+fi
+
 
   ${USE_SUDO} pwd
 
