@@ -151,8 +151,8 @@ fi
 if [ -z "$TARGET_SERVER" ]; then
   echo "TARGET_SERVER is empty"
   ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/${TEMPLATE_NAME} --vars-file /tmp/vm_vars.yaml
-elif [ "$TARGET_SERVER" == "hetzner" ]; then
-  echo "TARGET_SERVER is hetzner"
+elif [ "$TARGET_SERVER" == "hetzner" ] || [ "$TARGET_SERVER" == "rhel9-equinix" ]; then
+  echo "TARGET_SERVER is $TARGET_SERVER"
   ${USE_SUDO} python3 profile_generator/profile_generator.py update_yaml freeipa freeipa/${TEMPLATE_NAME}  --vars-file /tmp/vm_vars.yaml
 else
   echo "TARGET_SERVER is ${TARGET_SERVER}"
