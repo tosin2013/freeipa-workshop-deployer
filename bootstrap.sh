@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Function to check if a command exists
+command_exists() {
+  command -v "$1" &> /dev/null
+}
+
 # Exit on error
 set -e
 
@@ -118,3 +123,21 @@ echo "2. Run validate.sh to verify the environment"
 echo "3. Run ./total_deployer.sh to deploy FreeIPA"
 
 chmod +x bootstrap.sh
+
+print_section "Installing kcli"
+if ! command_exists kcli; then
+    print_info "Installing kcli..."
+    curl -s https://raw.githubusercontent.com/karmab/kcli/main/install.sh | bash
+    if [ ! -f /home/lab-user/.vault ];
+    then 
+        bash -c "openssl rand -base64 32 > /home/lab-user/.vault && chmod 600 /home/lab-user/.vault"
+    fi
+    if [ $? -eq 0 ]; then
+        print_status "kcli installed successfully" 0
+    else
+        print_status "Failed to install kcli" 1
+        exit 1
+    fi
+else
+    print_status "kcli is already installed" 0
+fi
