@@ -103,10 +103,10 @@ echo "Installing required Ansible collections..."
 # Configure firewalld
 echo "Configuring firewall..."
 systemctl enable --now firewalld
-firewall-cmd --permanent --add-service=dns
-firewall-cmd --permanent --add-service=freeipa-ldap
-firewall-cmd --permanent --add-service=freeipa-ldaps
-firewall-cmd --reload
+sudo firewall-cmd --permanent --add-service=dns
+sudo firewall-cmd --permanent --add-service=freeipa-ldap
+sudo firewall-cmd --permanent --add-service=freeipa-ldaps
+sudo firewall-cmd --reload
 
 # Create vars.sh from example if it doesn't exist
 if [ ! -f vars.sh ] && [ -f example.vars.sh ]; then
