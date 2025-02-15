@@ -1,7 +1,6 @@
 #!/bin/bash
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -x	## Uncomment for debugging
-
+set -x## Uncomment for debugging
 
 ## Functions
 function checkForProgram() {
@@ -30,7 +29,6 @@ fi
 if [ ! -z "$CICD_PIPELINE" ]; then
   export USE_SUDO="sudo"
 fi
-
 
 COMMUNITY_VERSION="$(echo -e "${COMMUNITY_VERSION}" | tr -d '[:space:]')"
 
@@ -63,7 +61,6 @@ then
   exit 1
 fi
 
-
 ${USE_SUDO} pwd
 
 ## Include vars if the file exists
@@ -86,32 +83,75 @@ fi
 # SECURE_DEPLOYMENT - The value of the secure deployment variable
 # INSTALL_RHEL_IMAGES - Set the vault to true if you want to install the RHEL images
 
-
 checkForProgramAndExit wget
 checkForProgramAndExit jq
 checkForProgramAndExit kcli
 checkForProgramAndExit sshpass
 
-if [ -d ${KCLI_PLANS_PATH} ]; then
-  echo "kcli-plan-samples already exists"
+# Set up working directory for KCLI plans
+if [ -d "${KCLI_PLANS_PATH}" ]; then
+  echo "Using existing KCLI plans directory: ${KCLI_PLANS_PATH}"
+  cd "${KCLI_PLANS_PATH}"
 else
-  exit 1
+  echo "Creating KCLI plans directory in current location"
+  mkdir -p "kcli-plans"
+  cd "kcli-plans"
+  # Here you might want to add code to initialize the plans directory if needed
 fi
 
-cd ${KCLI_PLANS_PATH}
-${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
-PASSWORD=$(${USE_SUDO} yq eval '.freeipa_server_admin_password' "${ANSIBLE_VAULT_FILE}")
+# Get configuration values with fallbacks
+if [ -f "${ANSIBLE_VAULT_FILE}" ] && command -v ansiblesafe &> /dev/null; then
+  echo "Using Ansible vault configuration"
+  ${USE_SUDO} /usr/local/bin/ansiblesafe -f "${ANSIBLE_VAULT_FILE}" -o 2
+  PASSWORD=$(${USE_SUDO} yq eval '.freeipa_server_admin_password' "${ANSIBLE_VAULT_FILE}")
+  RHSM_ORG=$(${USE_SUDO} yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
+  RHSM_ACTIVATION_KEY=$(${USE_SUDO} yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
+  PULL_SECRET=$(${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
+else
+  echo "Using direct configuration from vars.sh"
+  if [ -z "${FREEIPA_ADMIN_PASSWORD}" ]; then
+    echo "Error: FREEIPA_ADMIN_PASSWORD must be set in vars.sh when not using Ansible vault"
+    exit 1
+  fi
+  PASSWORD="${FREEIPA_ADMIN_PASSWORD}"
+  RHSM_ORG="${RHSM_ORG}"
+  RHSM_ACTIVATION_KEY="${RHSM_ACTIVATION_KEY}"
+  PULL_SECRET=""
+fi
+
 SSH_PASSWORD=${PASSWORD}
-RHSM_ORG=$(${USE_SUDO} yq eval '.rhsm_org' "${ANSIBLE_VAULT_FILE}")
-RHSM_ACTIVATION_KEY=$(${USE_SUDO} yq eval '.rhsm_activationkey' "${ANSIBLE_VAULT_FILE}")
-PULL_SECRET=$(${USE_SUDO} yq eval '.openshift_pull_secret' "${ANSIBLE_VAULT_FILE}")
 VM_NAME=freeipa-$(echo $RANDOM | md5sum | head -c 5; echo;)
 IMAGE_NAME=${IMAGE_NAME}
-DNS_FORWARDER=$(${USE_SUDO} yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
-DOMAIN=$(${USE_SUDO} yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
-DISK_SIZE=50
-KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
 
+# Get DNS and domain settings
+if [ -f "${ANSIBLE_ALL_VARIABLES}" ]; then
+  echo "Using Ansible variables for DNS configuration"
+  DNS_FORWARDER=$(${USE_SUDO} yq eval '.dns_forwarder' "${ANSIBLE_ALL_VARIABLES}")
+  DOMAIN=$(${USE_SUDO} yq eval '.domain' "${ANSIBLE_ALL_VARIABLES}")
+  # Get admin user from Ansible vars if not set directly
+  if [ -z "${KCLI_USER}" ]; then
+    KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${ANSIBLE_ALL_VARIABLES}")
+  fi
+elif [ -f "${DNS_VARIABLES_FILE}" ]; then
+  echo "Using custom DNS variables file"
+  DNS_FORWARDER=$(${USE_SUDO} yq eval '.dns_forwarder' "${DNS_VARIABLES_FILE}")
+  DOMAIN=$(${USE_SUDO} yq eval '.domain' "${DNS_VARIABLES_FILE}")
+  # Get admin user from DNS vars file if not set directly
+  if [ -z "${KCLI_USER}" ]; then
+    KCLI_USER=$(${USE_SUDO} yq eval '.admin_user' "${DNS_VARIABLES_FILE}")
+  fi
+else
+  echo "Using DNS settings from vars.sh"
+  # These values should already be set in vars.sh
+  if [ -z "${DNS_FORWARDER}" ] || [ -z "${DOMAIN}" ]; then
+    echo "Error: DNS_FORWARDER and DOMAIN must be set in vars.sh when not using Ansible variables"
+    exit 1
+  fi
+fi
+
+DISK_SIZE=50
+# Use LOGIN_USER as fallback if KCLI_USER is not set
+KCLI_USER=${KCLI_USER:-${LOGIN_USER}}
 
 if [ "$IMAGE_NAME" == "centos8stream" ]; then
   echo "Community version"
@@ -146,7 +186,6 @@ else
   exit 1
 fi
 
-
 # if target server is null run target server is empty if target server is hetzner run hetzner else run default
 if [ -z "$TARGET_SERVER" ]; then
   echo "TARGET_SERVER is empty"
@@ -158,8 +197,6 @@ else
   echo "TARGET_SERVER is ${TARGET_SERVER}"
  ${USE_SUDO} python3 profile_generator/profile_generator.py update-yaml freeipa freeipa/${TEMPLATE_NAME} --vars-file /tmp/vm_vars.yaml
 fi
-
-
 
 #cat  kcli-profiles.yml
 sleep 10s
@@ -195,11 +232,10 @@ ${IDM_HOSTNAME}
 
 [all:vars]
 ansible_ssh_private_key_file=/root/.ssh/id_rsa
-ansible_ssh_user=${LOGIN_USER}
+ansible_ssh_user=${KCLI_USER}
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_internal_private_ip=${IP_ADDRESS}
 EOF
-
 
 ${USE_SUDO} mv /tmp/inventory  $HOME/.generated/.${IDM_HOSTNAME}.${DOMAIN}/
 
@@ -207,4 +243,4 @@ ${USE_SUDO} sed -i  "s/PRIVATE_IP=.*/PRIVATE_IP=${IP_ADDRESS}/g" ${FREEIPA_REPO_
 ${USE_SUDO} sed -i  "s/DOMAIN=.*/DOMAIN=${DOMAIN}/g" ${FREEIPA_REPO_LOC}/vars.sh
 ${USE_SUDO} sed -i  "s/DNS_FORWARDER=.*/DNS_FORWARDER=${DNS_FORWARDER}/g" ${FREEIPA_REPO_LOC}/vars.sh
 
-${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no cloud-user@${IP_ADDRESS} || exit $?
+${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no ${KCLI_USER}@${IP_ADDRESS} || exit $?

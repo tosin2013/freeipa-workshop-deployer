@@ -1,4 +1,6 @@
 vars.sh
+vault.yml
+.vault_password
 .generated/
 .generated/*
 1_infra_*/.terraform/
