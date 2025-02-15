@@ -109,7 +109,7 @@ done
 
 echo -e "\nChecking Python packages..."
 PIP_PACKAGES=(
-    "ansible"
+    "ansible-core"
     "dnspython"
     "netaddr"
 )
