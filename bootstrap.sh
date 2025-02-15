@@ -95,6 +95,16 @@ for package in "${REQUIRED_PACKAGES[@]}"; do
     check_and_install $package
 done
 
+# Install yq
+if ! yq -v  &> /dev/null
+then
+    VERSION=v4.44.2
+    BINARY=yq_linux_amd64
+    sudo wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY} -O /usr/bin/yq &&\
+    sudo chmod +x /usr/bin/yq
+fi
+
+
 # Install Terraform
 TERRAFORM_VERSION="0.13.4"
 if ! command -v terraform &> /dev/null; then
@@ -111,7 +121,7 @@ fi
 # Install required Python packages
 echo "Installing required Python packages..."
 pip3 install --upgrade pip
-sudo pip3 install dnspython netaddr
+sudo pip3 install dnspython netaddr click
 
 # Install required Ansible collections
 echo "Installing required Ansible collections..."
