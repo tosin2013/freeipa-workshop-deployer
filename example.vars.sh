@@ -46,7 +46,7 @@ KCLI_CONFIG_FILE="${KCLI_CONFIG_DIR}/profiles.yml"
 PROFILES_FILE="kcli-profiles.yml"
 KCLI_PLANS_PATH=${KCLI_PLANS_PATH:-"${PWD}/kcli-plans"}
 FREEIPA_REPO_LOC=${FREEIPA_REPO_LOC:-"${PWD}"}
-KCLI_NETWORK="qubinet"
+KCLI_NETWORK="default"
 # Use COMMUNI=TY_VERSION="true" for centos9stream
 # Use COMMUNITY_VERSION="false" for rhel8
 COMMUNITY_VERSION="false"

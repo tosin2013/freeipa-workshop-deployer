@@ -1,6 +1,7 @@
 #!/bin/bash
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-set -x## Uncomment for debugging
+set -x
+set -e
 
 ## Functions
 function checkForProgram() {

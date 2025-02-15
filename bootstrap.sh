@@ -98,7 +98,7 @@ done
 # Install yq
 if ! yq -v  &> /dev/null
 then
-    VERSION=v4.44.2
+    VERSION=v4.45.1
     BINARY=yq_linux_amd64
     sudo wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY} -O /usr/bin/yq &&\
     sudo chmod +x /usr/bin/yq
@@ -145,7 +145,7 @@ if [ ! -f vars.sh ] && [ -f example.vars.sh ]; then
 fi
 
 print_section "Installing Libvirt"
-dnf install -y libvirt libvirt-daemon libvirt-daemon-driver-qemu
+dnf install -y libvirt libvirt-daemon libvirt-daemon-driver-qemu qemu-kvm qemu-kvm-core libvirt-daemon-kvm virt-install
 print_status "Libvirt and dependencies installed" $?
 
 # Start and enable libvirtd service
@@ -168,7 +168,8 @@ if ! command_exists kcli; then
     if [ ! -f /home/lab-user/.vault ];
     then 
         bash -c "openssl rand -base64 32 > /home/lab-user/.vault && chmod 600 /home/lab-user/.vault"
-        mkd -p kcli-plans
+        mkdir -p kcli-plans
+        mkdir -p /home/lab-user/.kcli/
     fi
     if [ $? -eq 0 ]; then
         print_status "kcli installed successfully" 0
@@ -396,6 +397,26 @@ else
     print_status "all.yml already exists" 0
     print_info "To recreate all.yml, delete the existing file and run bootstrap.sh again"
 fi
+
+print_section "Setting up Cockpit"
+# Install Cockpit and required packages
+print_info "Installing Cockpit and plugins..."
+dnf install -y cockpit cockpit-machines cockpit-pcp cockpit-packagekit cockpit-storaged
+print_status "Cockpit packages installed" $?
+
+# Enable and start Cockpit socket
+systemctl enable --now cockpit.socket
+print_status "Cockpit service enabled and started" $?
+
+# Configure firewall for Cockpit
+firewall-cmd --permanent --add-service=cockpit
+firewall-cmd --reload
+print_status "Firewall configured for Cockpit" $?
+
+systemctl restart libvirtd
+print_status "Libvirt configured for Cockpit integration" $?
+
+print_info "Cockpit is available at: https://$(hostname):9090"
 
 # Final checks
 echo -e "\n${GREEN}Bootstrap Complete!${NC}"
