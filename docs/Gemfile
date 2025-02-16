@@ -3,6 +3,9 @@ source "https://rubygems.org"
 gem "jekyll", "~> 3.9.3"
 gem "github-pages", group: :jekyll_plugins
 gem "webrick", "~> 1.8"
+gem "rubyzip", "~> 2.3.0"
+gem "faraday-retry"
+gem "html-proofer", "~> 5.0"
 
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.15"

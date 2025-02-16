@@ -2,6 +2,7 @@ title: FreeIPA Workshop Deployer
 description: Documentation for automated FreeIPA deployment and configuration
 baseurl: "/freeipa-workshop-deployer"
 url: "https://tosin2013.github.io"
+repository: tosin2013/freeipa-workshop-deployer
 
 # Build settings
 markdown: kramdown
