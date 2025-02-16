@@ -14,7 +14,7 @@ plugins:
   - jekyll-remote-theme
 
 # Theme settings
-logo: /assets/img/logo.png
+logo: /assets/img/logo.svg
 show_downloads: false
 google_analytics: # Optional
 
