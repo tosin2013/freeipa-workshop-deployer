@@ -1,7 +1,7 @@
 title: FreeIPA Workshop Deployer
 description: Documentation for automated FreeIPA deployment and configuration
-baseurl: ""
-url: ""
+baseurl: "/freeipa-workshop-deployer"
+url: "https://tosin2013.github.io"
 
 # Build settings
 markdown: kramdown
@@ -9,6 +9,13 @@ theme: jekyll-theme-minimal
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-remote-theme
+
+# Theme settings
+logo: /assets/img/logo.png
+show_downloads: false
+google_analytics: # Optional
 
 # Collections
 collections:
