@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic DNS Script - FreeIPA Workshop Deployer</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="/">FreeIPA Workshop Deployer</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="/overview/">Overview</a></li>
+                    <li><a href="/architecture/">Architecture</a></li>
+                    <li><a href="/technical-setup/">Technical Setup</a></li>
+                    <li><a href="/deployment/">Deployment</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h1 id="dynamic-dns-script">Dynamic DNS Script</h1>
+
+<p>This script is used to create DNS entries for different profiles, such as OpenShift or Ansible Automation Platform.</p>
+
+<p><a href="dns_profiles.sh">dns_profiles.sh</a></p>
+
+<h2 id="requirements">Requirements</h2>
+<ul>
+  <li>Python 3</li>
+  <li>click and pyyaml Python packages (installed with pip)</li>
+  <li>sudo access</li>
+</ul>
+
+<h2 id="usage">Usage</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: dynamic_dns.sh <span class="o">[</span><span class="nt">-h</span>|--help] &lt;profile&gt; &lt;ip_address_1&gt; &lt;ip_address_2&gt;
+
+Create DNS entries <span class="k">for </span>a specific profile
+
+Options:
+  <span class="nt">-h</span>, <span class="nt">--help</span>      Show this <span class="nb">help </span>message and <span class="nb">exit
+
+</span>Arguments:
+  profile         The profile to use <span class="o">(</span>openshift or ansible-aap<span class="o">)</span>
+  ip_address_1    The IP address to use <span class="k">for </span>the first DNS entry
+  ip_address_2    The IP address to use <span class="k">for </span>the second DNS entry <span class="o">(</span><span class="k">if </span>applicable<span class="o">)</span>
+</code></pre></div></div>
+<h2 id="examples">Examples</h2>
+
+<p><strong>Create DNS entries for OpenShift:</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./dynamic_dns.sh openshift 192.168.1.102 192.168.1.103
+</code></pre></div></div>
+
+<p><strong>Create DNS entries for Ansible Automation Platform:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./dynamic_dns.sh ansible-aap 192.168.1.102 192.168.1.103
+</code></pre></div></div>
+
+<h2 id="functionality">Functionality</h2>
+<p>The script uses two functions, openshift_profile and ansible_aap_profile, to create DNS entries for the respective profiles. These functions call a Python script (dynamic_dns.py) to add the entries to a YAML file containing the DNS names and IP addresses. The populate-hostnames.sh script is then called to update the local hosts file with the new entries.</p>
+
+<h2 id="license">License</h2>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2025 FreeIPA Workshop Deployer. Powered by Jekyll.</p>
+        </footer>
+    </div>
+</body>
+</html>
