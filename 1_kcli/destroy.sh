@@ -32,5 +32,8 @@ domain ${DOMAIN}
 nameserver ${DNS_FORWARDER}
 EOF
 ${USE_SUDO} mv /tmp/resolv.conf /etc/resolv.conf
-${USE_SUDO} sed -i '/${IDM_HOSTNAME}.${DOMAIN}/d' /etc/hosts
-${USE_SUDO} sed -i '/${IDM_HOSTNAME}/d' /etc/hosts
+
+# Remove all IDM-related entries from /etc/hosts
+${USE_SUDO} sed -i "/idm\./d" /etc/hosts
+${USE_SUDO} sed -i "/ipa\./d" /etc/hosts
+${USE_SUDO} sed -i "/${IDM_HOSTNAME}/d" /etc/hosts

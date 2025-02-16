@@ -193,6 +193,24 @@ else
     print_status "Vault password file already exists" 0
 fi
 
+print_section "Setting up ansiblesafe"
+local version="v0.0.14"
+local url="https://github.com/tosin2013/ansiblesafe/releases/download/v0.0.12/ansiblesafe-${version}-linux-amd64.tar.gz"
+local dest="/usr/local/bin/ansiblesafe"
+
+if ! command_exists ansiblesafe; then
+    echo -e "${YELLOW}Installing ansiblesafe...${NC}"
+    curl -OL $url 
+    tar -zxvf ansiblesafe-${version}-linux-amd64.tar.gz
+    mv ansiblesafe-linux-amd64 $dest
+    chmod +x $dest
+    ansiblesafe -h
+    rm ansiblesafe-${version}-linux-amd64.tar.gz
+    print_status "ansiblesafe installed successfully" $?
+else
+    print_status "ansiblesafe is already installed" 0
+fi
+
 # Function to prompt for value with default
 prompt_with_default() {
     local prompt=$1

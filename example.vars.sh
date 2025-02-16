@@ -33,7 +33,7 @@ DNS_VARIABLES_FILE=""
 
 ### KCLI variables
 export ANSIBLE_SAFE_VERSION="0.0.12"
-export INVENTORY=localhost
+export INVENTORY="rhel9-equinix"
 # Optional Qubinode Navigator integration - comment out to use direct configuration
 #export ANSIBLE_VAULT_FILE="/opt/qubinode_navigator/inventories/$INVENTORY/group_vars/control/vault.yml"
 #export ANSIBLE_ALL_VARIABLES="/opt/qubinode_navigator/inventories/${INVENTORY}/group_vars/all.yml"
