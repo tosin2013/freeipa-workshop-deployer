@@ -1,0 +1,48 @@
+title: FreeIPA Workshop Deployer
+description: Documentation for automated FreeIPA deployment and configuration
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown
+theme: jekyll-theme-minimal
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Collections
+collections:
+  guide:
+    output: true
+    permalink: /:collection/:path/
+  docs:
+    output: true
+    permalink: /:collection/:path/
+
+# Default layouts
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+  - scope:
+      path: "_guide"
+    values:
+      layout: page
+  - scope:
+      path: "_docs"
+    values:
+      layout: page
+
+# Navigation
+header_pages:
+  - overview.md
+  - architecture.md
+  - technical-setup.md
+  - deployment.md
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor

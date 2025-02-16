@@ -2,6 +2,7 @@ vars.sh
 vault.yml
 .vault_password
 kcli-plans/kcli-profiles.yml
+docs/vendor/
 .generated/
 .generated/*
 1_infra_*/.terraform/

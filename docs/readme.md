@@ -1,3 +1,9 @@
+---
+layout: page
+title: README
+permalink: /readme/
+---
+
 # FreeIPA Workshop Deployer
 
 A comprehensive solution for deploying FreeIPA/Red Hat Identity Management Server across multiple infrastructure providers (AWS, DigitalOcean, kcli) using Terraform and Ansible.
@@ -71,6 +77,24 @@ The validation script checks:
 - Firewall configuration
 - Infrastructure provider requirements
 
+### 3. Quick Deployment
+
+The `quick-deploy.sh` script provides a streamlined way to deploy and manage FreeIPA across different providers:
+
+```bash
+# Deploy using kcli
+./quick-deploy.sh kcli deploy
+
+# Deploy using AWS
+AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy ./quick-deploy.sh aws deploy
+
+# Deploy using DigitalOcean
+DO_PAT=xxx ./quick-deploy.sh do deploy
+
+# Destroy deployment
+./quick-deploy.sh [aws|do|kcli] destroy
+```
+
 #### Environment Variables for Customization
 
 Common variables:
@@ -91,7 +115,7 @@ DO_NODE_IMAGE=centos-8-x64
 DO_NODE_SIZE=s-1vcpu-2gb
 
 # kcli
-KCLI_NETWORK=default
+KCLI_NETWORK=qubinet
 COMMUNITY_VERSION=false  # Set to true for CentOS
 ```
 
@@ -122,7 +146,7 @@ Implement proper backup procedures for production deployments:
 - Backup validation
 - Disaster recovery planning
 
-Refer to the [documentation](docs/technical-setup.md) for detailed backup configuration.
+Refer to the [documentation]({% link technical-setup.md %}) for detailed backup configuration.
 
 ## Testing
 
@@ -133,7 +157,7 @@ The project includes comprehensive testing covering:
 - DNS management
 - Integration testing
 
-For detailed testing information, see the [testing documentation](docs/testing.md).
+For detailed testing information, see the [testing documentation]({% link testing.md %}).
 
 ## Connecting to OpenShift
 
@@ -185,12 +209,15 @@ spec:
 
 ## Documentation
 
-- [Technical Setup](docs/technical-setup.md)
-- [Deployment Guide](docs/deployment.md)
-- [Architecture Overview](docs/architecture.md)
-- [DNS Profiles](docs/dns_profiles.md)
-- [Dynamic DNS Management](docs/dynamic_dns.md)
-- [Testing Guide](docs/testing.md)
+- [Technical Setup]({% link technical-setup.md %})
+- [Deployment Guide]({% link deployment.md %})
+- [Architecture Overview]({% link architecture.md %})
+- [Configuration Scripts]({% link scripts/configuration.md %})
+- [Validation and Deployment]({% link scripts/validation.md %})
+- [DNS Profiles]({% link dns_profiles.md %})
+- [Dynamic DNS Management]({% link dynamic_dns.md %})
+- [Testing Guide]({% link testing.md %})
+- [OpenShift Integration]({% link integration/openshift.md %})
 
 ## Contributing
 
