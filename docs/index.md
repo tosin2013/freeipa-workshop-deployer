@@ -59,6 +59,16 @@ Welcome to the documentation for the FreeIPA Workshop Deployer project. This doc
 3. Configure DNS using the [DNS Profiles Guide](dns_profiles.md)
 4. Validate using the [Testing Guide](testing.md)
 
+## Latest Updates
+
+### [Help Wanted: FreeIPA Workshop Deployer Enhancements](blog/2025/02/16/help-wanted)
+We're looking for contributors to help enhance the project in several critical areas:
+- OS Platform Support Testing (CentOS Stream 9, CentOS 10, RHEL 9)
+- Cloud Provider Deployment Testing (AWS, DigitalOcean)
+- And more areas for contribution
+
+[View all blog posts](blog)
+
 ## Project Status
 
 The project is actively maintained and supports RHEL 9.5 as the primary platform. For the latest updates and changes, please refer to the project repository.
