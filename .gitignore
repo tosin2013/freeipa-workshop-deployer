@@ -11,3 +11,4 @@ docs/vendor/
 1_infra_*/terraform.tfstate*
 1_infra_*/.terraform*
 1_infra_*/terraform*
+docs/_site/
