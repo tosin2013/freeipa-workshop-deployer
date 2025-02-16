@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview - FreeIPA Workshop Deployer</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="/">FreeIPA Workshop Deployer</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="/overview/">Overview</a></li>
+                    <li><a href="/architecture/">Architecture</a></li>
+                    <li><a href="/technical-setup/">Technical Setup</a></li>
+                    <li><a href="/deployment/">Deployment</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <article class="page">
+    <h1>Overview</h1>
+    <div class="content">
+        <h1 id="freeipa-workshop-deployer">FreeIPA Workshop Deployer</h1>
+
+<p>This project provides a comprehensive deployment and configuration solution for FreeIPA (Free Identity, Policy, and Audit) using Infrastructure as Code (IaC) principles. It leverages Terraform for infrastructure provisioning and Ansible for system configuration, ensuring a repeatable and automated deployment process.</p>
+
+<h2 id="why-this-project-exists">Why This Project Exists</h2>
+
+<p>This project aims to simplify and automate the deployment of FreeIPA environments while ensuring consistency and security across different deployment scenarios.</p>
+
+<h2 id="problems-solved">Problems Solved</h2>
+
+<ul>
+  <li><strong>Complexity in Manual Deployment:</strong> Automates the deployment process, reducing the complexity and potential for human error.</li>
+  <li><strong>Consistency Across Environments:</strong> Ensures consistent deployment across development, staging, and production environments.</li>
+  <li><strong>Scalability:</strong> Facilitates easy scaling of FreeIPA deployments to accommodate growing needs.</li>
+  <li><strong>Security:</strong> Provides a secure and compliant deployment process, adhering to best practices for identity management.</li>
+</ul>
+
+<h2 id="how-it-works">How It Works</h2>
+
+<ol>
+  <li><strong>Infrastructure Provisioning</strong>
+    <ul>
+      <li>Uses Terraform to provision the necessary infrastructure on AWS, DigitalOcean, or kcli</li>
+      <li>Manages cloud resources and networking configurations</li>
+    </ul>
+  </li>
+  <li><strong>System Configuration</strong>
+    <ul>
+      <li>Employs Ansible to configure the FreeIPA server</li>
+      <li>Handles DNS setup, user provisioning, and certificate management</li>
+      <li>Ensures consistent system configuration across deployments</li>
+    </ul>
+  </li>
+  <li><strong>Dynamic DNS Management</strong>
+    <ul>
+      <li>Implements dynamic DNS management for flexible configuration</li>
+      <li>Supports various DNS providers and configurations</li>
+    </ul>
+  </li>
+  <li><strong>Testing and Validation</strong>
+    <ul>
+      <li>Provides comprehensive testing procedures</li>
+      <li>Ensures proper functionality of all components</li>
+      <li>Validates deployments against best practices</li>
+    </ul>
+  </li>
+  <li><strong>Monitoring and Alerts</strong>
+    <ul>
+      <li>Sets up monitoring systems for operational visibility</li>
+      <li>Configures alerts for system health and performance</li>
+      <li>Enables proactive issue identification and resolution</li>
+    </ul>
+  </li>
+</ol>
+
+    </div>
+</article>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2025 FreeIPA Workshop Deployer. Powered by Jekyll.</p>
+        </footer>
+    </div>
+</body>
+</html>

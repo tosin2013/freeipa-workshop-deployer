@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeIPA Workshop Deployer Testing Guide - FreeIPA Workshop Deployer</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="/">FreeIPA Workshop Deployer</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="/overview/">Overview</a></li>
+                    <li><a href="/architecture/">Architecture</a></li>
+                    <li><a href="/technical-setup/">Technical Setup</a></li>
+                    <li><a href="/deployment/">Deployment</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h1 id="freeipa-workshop-deployer-testing-guide">FreeIPA Workshop Deployer Testing Guide</h1>
+
+<p>This document provides comprehensive testing procedures for the FreeIPA Workshop Deployer across all supported deployment patterns.</p>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ol>
+  <li><a href="#prerequisites">Prerequisites</a></li>
+  <li><a href="#test-environment-setup">Test Environment Setup</a></li>
+  <li><a href="#testing-procedures">Testing Procedures</a></li>
+  <li><a href="#provider-specific-tests">Provider-Specific Tests</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#test-result-interpretation">Test Result Interpretation</a></li>
+</ol>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<h3 id="general-requirements">General Requirements</h3>
+<ul>
+  <li>RHEL 9.5 system</li>
+  <li>Root/sudo access</li>
+  <li>Internet connectivity</li>
+  <li>Git installed</li>
+  <li>Ansible Core installed</li>
+  <li>Python 3.x installed</li>
+</ul>
+
+<h3 id="provider-specific-requirements">Provider-Specific Requirements</h3>
+
+<h4 id="aws-testing">AWS Testing</h4>
+<ul>
+  <li>AWS account with appropriate permissions</li>
+  <li>AWS CLI installed and configured</li>
+  <li>Valid AWS access and secret keys</li>
+  <li>Existing VPC or permissions to create one</li>
+  <li>Route53 zone for DNS management</li>
+  <li>Sufficient quota for m5.xlarge instances</li>
+</ul>
+
+<h4 id="digitalocean-testing">DigitalOcean Testing</h4>
+<ul>
+  <li>DigitalOcean account</li>
+  <li>Valid API token</li>
+  <li>DNS zone configured in DigitalOcean</li>
+  <li>Sufficient droplet quota</li>
+</ul>
+
+<h4 id="kcli-testing">KCLI Testing</h4>
+<ul>
+  <li>KCLI installed and configured</li>
+  <li>Libvirt/KVM environment set up</li>
+  <li>Required VM images downloaded</li>
+  <li>Local network configured</li>
+</ul>
+
+<h2 id="test-environment-setup">Test Environment Setup</h2>
+
+<ol>
+  <li>Clone the repository:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/yourusername/freeipa-workshop-deployer.git
+<span class="nb">cd </span>freeipa-workshop-deployer
+</code></pre></div>    </div>
+  </li>
+  <li>Run bootstrap script:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> ./bootstrap.sh
+</code></pre></div>    </div>
+  </li>
+  <li>Prepare configuration:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>example.vars.sh vars.sh
+<span class="c"># Edit vars.sh with your specific configuration</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Validate environment:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> ./validate.sh
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="testing-procedures">Testing Procedures</h2>
+
+<h3 id="1-base-environment-tests">1. Base Environment Tests</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Test system requirements</span>
+<span class="nb">cat</span> /etc/redhat-release  <span class="c"># Should show RHEL 9.5</span>
+rpm <span class="nt">-qa</span> | <span class="nb">grep</span> <span class="nt">-E</span> <span class="s2">"git|curl|wget|unzip|python3|ansible-core"</span>  <span class="c"># Verify packages</span>
+
+<span class="c"># Test configuration</span>
+<span class="nb">source </span>vars.sh
+<span class="nb">echo</span> <span class="nv">$DOMAIN</span>  <span class="c"># Verify variables are loaded</span>
+</code></pre></div></div>
+
+<h3 id="2-infrastructure-tests">2. Infrastructure Tests</h3>
+
+<p>For each provider (aws/digitalocean/kcli), run:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Deploy infrastructure</span>
+./total_deployer.sh
+
+<span class="c"># Verify resources</span>
+<span class="c"># AWS</span>
+aws ec2 describe-instances <span class="nt">--filters</span> <span class="s2">"Name=tag:Name,Values=idm"</span>
+
+<span class="c"># DigitalOcean</span>
+doctl compute droplet list
+
+<span class="c"># KCLI</span>
+kcli list vm
+</code></pre></div></div>
+
+<h3 id="3-service-tests">3. Service Tests</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Test FreeIPA web UI access</span>
+curl <span class="nt">-k</span> https://<span class="k">${</span><span class="nv">IDM_HOSTNAME</span><span class="k">}</span>.<span class="k">${</span><span class="nv">DOMAIN</span><span class="k">}</span>
+
+<span class="c"># Test DNS resolution</span>
+dig @<span class="k">${</span><span class="nv">IP_ADDRESS</span><span class="k">}</span> <span class="k">${</span><span class="nv">IDM_HOSTNAME</span><span class="k">}</span>.<span class="k">${</span><span class="nv">DOMAIN</span><span class="k">}</span>
+
+<span class="c"># Test LDAP</span>
+ldapsearch <span class="nt">-x</span> <span class="nt">-h</span> <span class="k">${</span><span class="nv">IDM_HOSTNAME</span><span class="k">}</span>.<span class="k">${</span><span class="nv">DOMAIN</span><span class="k">}</span>
+</code></pre></div></div>
+
+<h2 id="provider-specific-tests">Provider-Specific Tests</h2>
+
+<h3 id="aws-deployment-tests">AWS Deployment Tests</h3>
+
+<ol>
+  <li>Infrastructure Verification:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check instance status</span>
+aws ec2 describe-instance-status
+
+<span class="c"># Verify security groups</span>
+aws ec2 describe-security-groups
+
+<span class="c"># Test DNS records</span>
+aws route53 list-resource-record-sets <span class="nt">--hosted-zone-id</span> <span class="nv">$ZONE_ID</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Network Tests:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Test security group connectivity</span>
+nc <span class="nt">-zv</span> <span class="k">${</span><span class="nv">IP_ADDRESS</span><span class="k">}</span> 443
+nc <span class="nt">-zv</span> <span class="k">${</span><span class="nv">IP_ADDRESS</span><span class="k">}</span> 389
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="digitalocean-deployment-tests">DigitalOcean Deployment Tests</h3>
+
+<ol>
+  <li>Infrastructure Verification:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check droplet status</span>
+doctl compute droplet get <span class="k">${</span><span class="nv">DROPLET_ID</span><span class="k">}</span>
+
+<span class="c"># Verify firewall rules</span>
+doctl compute firewall list
+
+<span class="c"># Test DNS records</span>
+doctl compute domain records list <span class="k">${</span><span class="nv">DOMAIN</span><span class="k">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Network Tests:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Test firewall rules</span>
+nc <span class="nt">-zv</span> <span class="k">${</span><span class="nv">IP_ADDRESS</span><span class="k">}</span> 443
+nc <span class="nt">-zv</span> <span class="k">${</span><span class="nv">IP_ADDRESS</span><span class="k">}</span> 389
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="kcli-deployment-tests">KCLI Deployment Tests</h3>
+
+<ol>
+  <li>Infrastructure Verification:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check VM status</span>
+kcli info vm freeipa
+
+<span class="c"># Verify network</span>
+kcli list network
+
+<span class="c"># Test local DNS</span>
+dig @<span class="k">${</span><span class="nv">IP_ADDRESS</span><span class="k">}</span> <span class="k">${</span><span class="nv">IDM_HOSTNAME</span><span class="k">}</span>.<span class="k">${</span><span class="nv">DOMAIN</span><span class="k">}</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="common-issues">Common Issues</h3>
+
+<ol>
+  <li>DNS Resolution Failures
+    <ul>
+      <li>Verify DNS forwarder configuration</li>
+      <li>Check DNS zone delegation</li>
+      <li>Validate record creation</li>
+    </ul>
+  </li>
+  <li>Service Access Issues
+    <ul>
+      <li>Verify security group/firewall rules</li>
+      <li>Check service status on the instance</li>
+      <li>Validate network connectivity</li>
+    </ul>
+  </li>
+  <li>Deployment Failures
+    <ul>
+      <li>Check resource quotas</li>
+      <li>Verify credentials</li>
+      <li>Review deployment logs</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="log-collection">Log Collection</h3>
+
+<p>Gather logs for troubleshooting:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># System logs</span>
+journalctl <span class="nt">-xe</span>
+
+<span class="c"># FreeIPA logs</span>
+<span class="nb">sudo tail</span> <span class="nt">-f</span> /var/log/ipaserver-install.log
+
+<span class="c"># Deployment logs</span>
+<span class="nb">sudo tail</span> <span class="nt">-f</span> /var/log/messages
+</code></pre></div></div>
+
+<h2 id="test-result-interpretation">Test Result Interpretation</h2>
+
+<h3 id="success-criteria">Success Criteria</h3>
+
+<ol>
+  <li>Environment Setup
+    <ul>
+      <li>All required packages installed</li>
+      <li>Configuration loaded correctly</li>
+      <li>Network prerequisites met</li>
+    </ul>
+  </li>
+  <li>Infrastructure Deployment
+    <ul>
+      <li>Resources created successfully</li>
+      <li>Network connectivity established</li>
+      <li>DNS records propagated</li>
+    </ul>
+  </li>
+  <li>Service Configuration
+    <ul>
+      <li>FreeIPA installed and running</li>
+      <li>Web UI accessible</li>
+      <li>LDAP services operational</li>
+      <li>User provisioning successful</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="test-reporting">Test Reporting</h3>
+
+<p>Document test results including:</p>
+<ul>
+  <li>Test date and environment</li>
+  <li>Provider-specific details</li>
+  <li>Test cases executed</li>
+  <li>Issues encountered</li>
+  <li>Resolution steps taken</li>
+</ul>
+
+<h3 id="cleanup-procedures">Cleanup Procedures</h3>
+
+<p>After testing, clean up resources:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># AWS</span>
+./1_infra_aws/destroy.sh
+
+<span class="c"># DigitalOcean</span>
+./1_infra_digitalocean/destroy.sh
+
+<span class="c"># KCLI</span>
+./1_kcli/destroy.sh
+</code></pre></div></div>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://www.freeipa.org/page/Documentation">FreeIPA Documentation</a></li>
+  <li><a href="https://aws.amazon.com/testing-tools/">AWS Testing Best Practices</a></li>
+  <li><a href="https://docs.digitalocean.com/reference/api/">DigitalOcean API Documentation</a></li>
+  <li><a href="https://kcli.readthedocs.io/">KCLI Documentation</a></li>
+</ul>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2025 FreeIPA Workshop Deployer. Powered by Jekyll.</p>
+        </footer>
+    </div>
+</body>
+</html>
