@@ -17,8 +17,7 @@ function checkForProgramAndExit() {
         printf '%-72s %-7s\n' $1 "PASSED!";
     else
         printf '%-72s %-7s\n' $1 "FAILED!";
-        exit 1
-    fi
+            fi
 }
 
 if [ "$EUID" -ne 0 ]
@@ -50,8 +49,7 @@ elif [ "$COMMUNITY_VERSION" == "false" ]; then
   echo "TEMPLATE_NAME: $TEMPLATE_NAME"
 else
   echo "Correct $COMMUNITY_VERSION not set"
-  exit 1
-fi
+  fi
 
 if [[ ! -f /var/lib/libvirt/images/${IMAGE_NAME} ]];
 then
@@ -151,7 +149,7 @@ fi
 
 DISK_SIZE=50
 # Use LOGIN_USER as fallback if KCLI_USER is not set
-KCLI_USER=${KCLI_USER:-${LOGIN_USER}}
+KCLI_USER=${KCLI_USER}
 
 if [ "$IMAGE_NAME" == "centos8stream" ]; then
   echo "Community version"
@@ -239,8 +237,27 @@ EOF
 
 ${USE_SUDO} mv /tmp/inventory  $HOME/.generated/.${IDM_HOSTNAME}.${DOMAIN}/
 
+# Create a test playbook
+${USE_SUDO} tee /tmp/test_connection.yml <<EOF
+---
+- hosts: idm
+  gather_facts: no
+  tasks:
+    - name: Test connection
+      ping:
+EOF
+
+# Continue with the rest of the script only if the test passed
 ${USE_SUDO} sed -i  "s/PRIVATE_IP=.*/PRIVATE_IP=${IP_ADDRESS}/g" ${FREEIPA_REPO_LOC}/vars.sh
 ${USE_SUDO} sed -i  "s/DOMAIN=.*/DOMAIN=${DOMAIN}/g" ${FREEIPA_REPO_LOC}/vars.sh
 ${USE_SUDO} sed -i  "s/DNS_FORWARDER=.*/DNS_FORWARDER=${DNS_FORWARDER}/g" ${FREEIPA_REPO_LOC}/vars.sh
 
 ${USE_SUDO} sshpass -p "$SSH_PASSWORD" ${USE_SUDO} ssh-copy-id -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no ${KCLI_USER}@${IP_ADDRESS} || exit $?
+
+# Test the inventory with ansible-playbook
+${USE_SUDO} export ANSIBLE_HOST_KEY_CHECKING=False
+${USE_SUDO} ansible-playbook -i $HOME/.generated/.${IDM_HOSTNAME}.${DOMAIN}/inventory /tmp/test_connection.yml
+if [ $? -ne 0 ]; then
+    echo "Ansible inventory test failed. Please check the connection details and try again."
+    exit 1
+fi

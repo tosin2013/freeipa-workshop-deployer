@@ -37,3 +37,4 @@ ${USE_SUDO} mv /tmp/resolv.conf /etc/resolv.conf
 ${USE_SUDO} sed -i "/idm\./d" /etc/hosts
 ${USE_SUDO} sed -i "/ipa\./d" /etc/hosts
 ${USE_SUDO} sed -i "/${IDM_HOSTNAME}/d" /etc/hosts
+${USE_SUDO}  ssh-keygen -R idm

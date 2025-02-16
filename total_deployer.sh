@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## set -x	## Uncomment for debugging
-
+set -e
 sudo pwd
 
 ## Include vars if the file exists
@@ -22,7 +22,7 @@ if [ $INFRA_PROVIDER = "digitalocean" ]; then
 fi
 
 if [ $INFRA_PROVIDER = "kcli" ]; then
-  ./1_kcli/create.sh
+  ./1_kcli/create.sh || exit $?
 fi
 
 ./2_ansible_config/configure.sh
