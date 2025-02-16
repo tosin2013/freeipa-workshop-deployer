@@ -1,6 +1,4 @@
----
----
-@import "{{ site.theme }}";
+/* Custom styles for the minimal theme */
 
 .main-nav {
   margin-top: 20px;
@@ -31,14 +29,25 @@
   text-decoration: none;
 }
 
-.main-nav li a:hover,
-.main-nav li a.active {
+.main-nav li a:hover {
   color: #069;
   text-decoration: none;
-  font-weight: bold;
 }
 
-.main-nav li.active > a {
-  color: #069;
-  font-weight: bold;
+/* Responsive adjustments */
+@media print, screen and (max-width: 960px) {
+  .wrapper {
+    width: auto;
+    margin: 0;
+  }
+}
+
+@media print, screen and (max-width: 720px) {
+  .wrapper {
+    padding: 15px;
+  }
+  
+  .main-nav {
+    margin-top: 10px;
+  }
 }
