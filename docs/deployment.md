@@ -19,7 +19,7 @@ This guide covers both development and production deployment procedures for the 
 
 1. **Bootstrap Environment**
    ```bash
-   ./bootstrap.sh
+   sudo ./bootstrap.sh
    ```
    This sets up the development environment with required dependencies.
 
@@ -38,24 +38,11 @@ This guide covers both development and production deployment procedures for the 
 
 4. **Choose Provider**
    Select your infrastructure provider:
-   - AWS: Use `1_infra_aws/create.sh`
-   - DigitalOcean: Use `1_infra_digitalocean/create.sh`
-   - kcli: Use `1_kcli/create.sh`
+   - AWS: Use `sudo ./total_deployer.sh aws`
+   - DigitalOcean: Use `sudo ./total_deployer.sh digitalocean`
+   - kcli: Use `sudo ./total_deployer.sh kcli`
 
-5. **Deploy Infrastructure**
-   ```bash
-   # Example for AWS
-   cd 1_infra_aws
-   ./create.sh
-   ```
-
-6. **Configure FreeIPA**
-   ```bash
-   cd 2_ansible_config
-   ./configure.sh
-   ```
-
-7. **Verify Installation**
+5. **Verify Installation**
    - Access FreeIPA web UI
    - Test user provisioning
    - Verify DNS configuration
@@ -66,58 +53,6 @@ This guide covers both development and production deployment procedures for the 
 - Debug logging enabled by default
 - Consider using local kcli deployment for testing
 
-## Production Deployment
-
-### Prerequisites
-- RHEL 9.5 environment
-- Production-grade infrastructure access
-- DNS delegation configured
-- Security audit completed
-
-### Steps
-
-1. **Environment Verification**
-   - Confirm RHEL 9.5 compatibility
-   - Verify network requirements
-   - Check DNS delegation
-
-2. **Production Configuration**
-   ```bash
-   # Configure with production settings
-   ./bootstrap.sh --production
-   ```
-
-3. **Infrastructure Setup**
-   - Configure production-grade instances
-     - AWS: m5.xlarge recommended
-     - Equivalent sizes for other providers
-   - Set up proper networking and security groups
-
-4. **DNS Configuration**
-   - Configure DNS delegation
-   - Set up DNS profiles
-   - Verify record propagation
-
-5. **High-Availability Setup**
-   - Deploy redundant servers
-   - Configure load balancing
-   - Set up replication
-
-6. **Security Configuration**
-   - Configure firewall rules
-   - Set up SSL certificates
-   - Implement security policies
-
-7. **Monitoring Setup**
-   - Configure system monitoring
-   - Set up alerting
-   - Enable performance metrics
-
-### Production Notes
-- Use production-grade instance sizes
-- Implement comprehensive backup strategy
-- Configure proper security measures
-- Set up monitoring and alerting
 
 ## Deployment Caveats
 
