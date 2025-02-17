@@ -194,9 +194,9 @@ else
 fi
 
 print_section "Setting up ansiblesafe"
-local version="v0.0.14"
-local url="https://github.com/tosin2013/ansiblesafe/releases/download/v0.0.12/ansiblesafe-${version}-linux-amd64.tar.gz"
-local dest="/usr/local/bin/ansiblesafe"
+version="v0.0.14"
+url="https://github.com/tosin2013/ansiblesafe/releases/download/v0.0.12/ansiblesafe-${version}-linux-amd64.tar.gz"
+dest="/usr/local/bin/ansiblesafe"
 
 if ! command_exists ansiblesafe; then
     echo -e "${YELLOW}Installing ansiblesafe...${NC}"
