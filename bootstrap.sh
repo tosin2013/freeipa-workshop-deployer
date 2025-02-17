@@ -204,7 +204,7 @@ if ! command_exists ansiblesafe; then
     tar -zxvf ansiblesafe-${version}-linux-amd64.tar.gz
     mv ansiblesafe-linux-amd64 $dest
     chmod +x $dest
-    ansiblesafe -h
+    #ansiblesafe -h
     rm ansiblesafe-${version}-linux-amd64.tar.gz
     print_status "ansiblesafe installed successfully" $?
 else
