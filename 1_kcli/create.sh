@@ -207,7 +207,7 @@ if [ -n "$IN_INSTALLED" ]; then
     echo "FreeIPA is installed on VM $IN_INSTALLED"
 else
     echo "FreeIPA is not installed"
-    ${USE_SUDO} /usr/bin/kcli create vm -p freeipa freeipa -w || exit $?
+    ${USE_SUDO} /usr/bin/kcli create vm -p freeipa freeipa  || exit $?
 fi
 
 IP_ADDRESS=$(${USE_SUDO} /usr/bin/kcli info vm freeipa | grep ip: | awk '{print $2}')
